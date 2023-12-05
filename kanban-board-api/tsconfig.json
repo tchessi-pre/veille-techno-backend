@@ -17,5 +17,8 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false
-  }
+  },
+  "paths": {
+  "@prisma/client": ["prisma/client/index.d.ts"]
+}
 }

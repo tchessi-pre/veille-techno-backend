@@ -30,18 +30,27 @@ export class UsersService {
     }
   }
 
+  // Connexion
   async validateUser(username: string, password: string) {
     try {
       const user = await this.prisma.user.findUnique({
         where: { username },
       });
 
-      if (user && (await bcrypt.compare(password, user.password))) {
-        const { password, ...result } = user;
-        return result;
+      if (!user) {
+        throw new Error('User not found');
       }
-      return null;
+
+      const { password: hashedPassword, ...result } = user;
+      const passwordValid = await bcrypt.compare(password, hashedPassword);
+
+      if (!passwordValid) {
+        throw new Error('Invalid password');
+      }
+
+      return result;
     } catch (error) {
+      // On envoye un message d'erreur plus générique en production pour des raisons de sécurité
       throw new InternalServerErrorException('Failed to validate user');
     }
   }
