@@ -1,0 +1,19 @@
+meta {
+  name: deleteUser
+  type: http
+  seq: 6
+}
+
+delete {
+  url: http://localhost:3000/users/35
+  body: none
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlRjaGVzc2kyIiwic3ViIjozNSwiaWF0IjoxNzAxODc1MzEwLCJleHAiOjE3MDE4NzUzNzB9.p5sOO016OKac-qWo9EhOH5ggkEnq4QjFGho-a4VgGVE
+}

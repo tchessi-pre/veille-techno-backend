@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Put,
+  Request,
   HttpCode,
   HttpStatus,
   UsePipes,
@@ -13,6 +14,8 @@ import {
   NotFoundException,
   BadRequestException,
   ConflictException,
+  UseGuards,
+  Delete,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto'; 
@@ -20,6 +23,7 @@ import { UsersService } from './users.service';
 import { User } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt'; 
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('/')
 @UsePipes(new ValidationPipe())
@@ -27,8 +31,7 @@ export class UsersController {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
-  ) { }
-  
+  ) {}
 
   // Inscription
   @Post('register') //indique que c'est un endpoint POST  /register. pour la creation d'un utilisateur
@@ -97,5 +100,19 @@ export class UsersController {
         throw new Error('Failed to update user');
       }
     }
+  }
+
+  // Supprimer un utilisateur par son ID
+  @Delete('users/:id')
+  @UseGuards(AuthGuard('jwt'))
+  async deleteUser(@Param('id') id: string, @Request() req) {
+    const userId = parseInt(id, 10);
+    const requestingUserId = req.user.userId; // Assurez-vous que cette propriété correspond à celle dans le payload JWT
+
+    // Appeler la méthode deleteUser du service avec les deux IDs
+    await this.usersService.deleteUser(userId, requestingUserId);
+
+    // Réponse de succès
+    return { message: 'User deleted successfully' };
   }
 }

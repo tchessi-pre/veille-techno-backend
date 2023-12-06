@@ -3,6 +3,7 @@ import {
   ConflictException,
   InternalServerErrorException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
@@ -83,7 +84,7 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    
+
     // Vérifier si le champ 'email' existe dans updateUserDto et s'il est différent de l'ancien email
     if (updateUserDto.email && updateUserDto.email !== user.email) {
       // Vérifier si l'email existe déjà dans la base de données
@@ -134,6 +135,32 @@ export class UsersService {
       } catch (error) {
         throw new InternalServerErrorException('Failed to update user');
       }
+    }
+  }
+
+  // Supprimer un utilisateur
+  async deleteUser(userId: number, requestingUserId: number): Promise<void> {
+    // Vérifiez si l'utilisateur existe
+    const user = await this.findUserById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Vérifiez que l'utilisateur connecté est le propriétaire du compte
+    if (requestingUserId !== userId) {
+      throw new UnauthorizedException(
+        'You are not authorized to delete this user',
+      );
+    }
+
+    try {
+      // Supprimez l'utilisateur de la base de données en utilisant Prisma
+      await this.prisma.user.delete({
+        where: { id: userId },
+      });
+    } catch (error) {
+      // Gérez les erreurs possibles lors de la suppression de l'utilisateur
+      throw new InternalServerErrorException('Failed to delete user');
     }
   }
 }
