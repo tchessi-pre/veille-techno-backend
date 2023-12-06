@@ -1,0 +1,29 @@
+meta {
+  name: updateUser
+  type: http
+  seq: 5
+}
+
+put {
+  url: http://localhost:3000/users/35
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlRjaGVzc2kyIiwic3ViIjozNSwiaWF0IjoxNzAxODU4NjMzLCJleHAiOjE3MDE4NTg2OTN9.CC4wpT5nR-mqQNMsv3uWUrch5lW6RiTJX0QajsQOIC4
+}
+
+body:json {
+  {
+    "username": "Tchessi2",
+    "password": "Password1234",
+    "email": "tchessi2@test.fr",
+    "role": "user"
+  }
+  
+}

@@ -2,15 +2,16 @@ import {
   Injectable,
   ConflictException,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from '@prisma/client';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
- 
   constructor(private prisma: PrismaService) {}
 
   // Inscription
@@ -70,5 +71,69 @@ export class UsersService {
         id: id,
       },
     });
+  }
+
+  // Mettre à jour un utilisateur
+  async updateUser(
+    userId: number,
+    updateUserDto: UpdateUserDto,
+  ): Promise<User> {
+    // Vérifier si l'utilisateur existe
+    const user = await this.findUserById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    
+    // Vérifier si le champ 'email' existe dans updateUserDto et s'il est différent de l'ancien email
+    if (updateUserDto.email && updateUserDto.email !== user.email) {
+      // Vérifier si l'email existe déjà dans la base de données
+      const emailExists = await this.prisma.user.findUnique({
+        where: { email: updateUserDto.email },
+      });
+      if (emailExists) {
+        throw new ConflictException('Email already exists');
+      }
+    }
+
+    // Vérifier si le champ 'username' existe dans updateUserDto et s'il est différent de l'ancien username
+    if (updateUserDto.username && updateUserDto.username !== user.username) {
+      // Vérifier si le username existe déjà dans la base de données
+      const usernameExists = await this.prisma.user.findUnique({
+        where: { username: updateUserDto.username },
+      });
+      if (usernameExists) {
+        throw new ConflictException('Username already exists');
+      }
+    }
+
+    // Vérifier si le champ 'password' existe dans updateUserDto
+    if (updateUserDto.password) {
+      // Hacher le nouveau mot de passe
+      const hashedPassword = await bcrypt.hash(updateUserDto.password, 10);
+      try {
+        // Mettre à jour l'utilisateur avec le nouveau mot de passe haché
+        const updatedUser = await this.prisma.user.update({
+          where: { id: userId },
+          data: {
+            ...updateUserDto,
+            password: hashedPassword, // Mettre à jour le mot de passe haché
+          },
+        });
+        return updatedUser;
+      } catch (error) {
+        throw new InternalServerErrorException('Failed to update user');
+      }
+    } else {
+      // Si le champ 'password' n'existe pas, mettre à jour l'utilisateur sans modifier le mot de passe
+      try {
+        const updatedUser = await this.prisma.user.update({
+          where: { id: userId },
+          data: updateUserDto,
+        });
+        return updatedUser;
+      } catch (error) {
+        throw new InternalServerErrorException('Failed to update user');
+      }
+    }
   }
 }
