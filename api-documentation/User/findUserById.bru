@@ -1,0 +1,19 @@
+meta {
+  name: findUserById
+  type: http
+  seq: 4
+}
+
+get {
+  url: http://localhost:3000/users/31
+  body: none
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlRjaGVzc2kiLCJzdWIiOjMxLCJpYXQiOjE3MDE4NTU0MDUsImV4cCI6MTcwMTg1NTQ2NX0.oMzyOPMAwGXBENZWBXuifeTXdzMUerr9SwZ5uYEqaIs
+}

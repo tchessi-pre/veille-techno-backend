@@ -5,9 +5,17 @@ import { PrismaService } from './prisma/prisma.service';
 import { UsersService } from './users/users.service';
 import { UsersController } from './users/users.controller';
 import { AuthModule } from './auth/auth.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [AuthModule],
+  imports: [
+    AuthModule,
+    AuthModule,
+    JwtModule.register({
+      secret: process.env.JWT_SECRET, // Remplacez par votre clé secrète
+      signOptions: { expiresIn: process.env.JWT_EXPIRATION_TIME },
+    }),
+  ],
   controllers: [AppController, UsersController],
   providers: [AppService, UsersService, UsersService, PrismaService],
 })
