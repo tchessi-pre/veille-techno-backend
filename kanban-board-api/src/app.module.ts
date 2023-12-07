@@ -7,6 +7,9 @@ import { UsersController } from './users/users.controller';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { TasksModule } from './tasks/tasks.module';
+import { TaskListsModule } from './task-lists/task-lists.module';
+import { BoardsModule } from './boards/boards.module';
 
 @Module({
   imports: [
@@ -16,6 +19,9 @@ import { PassportModule } from '@nestjs/passport';
       secret: process.env.JWT_SECRET, // Remplacez par votre clé secrète
       signOptions: { expiresIn: process.env.JWT_EXPIRATION_TIME },
     }),
+    TasksModule,
+    TaskListsModule,
+    BoardsModule,
   ],
   controllers: [AppController, UsersController],
   providers: [AppService, UsersService, UsersService, PrismaService],
