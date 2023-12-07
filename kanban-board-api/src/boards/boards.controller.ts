@@ -17,7 +17,7 @@ export class BoardsController {
   constructor(private readonly boardsService: BoardsService) {}
 
   @Post()
-  async createBoard(@Body() createBoardDto: CreateBoardDto): Promise<Board> {
+  async createBoard(@Body() createBoardDto: CreateBoardDto) {
     return this.boardsService.createBoard(createBoardDto);
   }
 

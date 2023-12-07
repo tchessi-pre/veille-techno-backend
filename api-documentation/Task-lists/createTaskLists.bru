@@ -1,0 +1,27 @@
+meta {
+  name: createTaskLists
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:3000/task-lists
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlRjaGVzc2kzIiwic3ViIjozOSwiaWF0IjoxNzAxOTUyMjQ4LCJleHAiOjE3MDE5NTIzMDh9.mtnQA9kkOPgmn3MKxL1XnaA-7R1ztDAf3M9P1ewe6oA
+}
+
+body:json {
+  {
+    "title": "Ma Liste de Tâches",
+    "boardId": 1
+  }
+  
+}

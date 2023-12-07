@@ -1,10 +1,11 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsInt } from 'class-validator';
 
 export class CreateBoardDto {
   @IsString()
   @IsNotEmpty()
   title: string;
 
+  @IsInt()
   @IsNotEmpty()
-  ownerId: number; // L'ID de l'utilisateur propriétaire du tableau
+  ownerId: number; // Ajoutez ownerId pour spécifier l'utilisateur propriétaire du tableau
 }

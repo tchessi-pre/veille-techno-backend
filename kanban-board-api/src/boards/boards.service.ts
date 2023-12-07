@@ -8,9 +8,16 @@ import { Board } from '@prisma/client';
 export class BoardsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createBoard(createBoardDto: CreateBoardDto): Promise<Board> {
+  async createBoard(createBoardDto: CreateBoardDto) {
     return this.prisma.board.create({
-      data: createBoardDto,
+      data: {
+        title: createBoardDto.title,
+        owner: {
+          connect: {
+            id: createBoardDto.ownerId,
+          },
+        },
+      },
     });
   }
 

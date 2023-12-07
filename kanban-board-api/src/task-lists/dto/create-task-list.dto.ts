@@ -1,4 +1,3 @@
-// dto/create-task-list.dto.ts
 import { IsString, IsNotEmpty, IsInt } from 'class-validator';
 
 export class CreateTaskListDto {
@@ -6,7 +5,7 @@ export class CreateTaskListDto {
   @IsNotEmpty()
   title: string;
 
-  @IsInt() 
+  @IsInt()
   @IsNotEmpty()
   boardId: number;
 }

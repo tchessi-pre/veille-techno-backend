@@ -17,6 +17,7 @@ export class TaskListsController {
   constructor(private readonly taskListsService: TaskListsService) {}
 
   @Post()
+  @Post()
   async createTaskList(@Body() createTaskListDto: CreateTaskListDto) {
     return this.taskListsService.createTaskList(createTaskListDto);
   }

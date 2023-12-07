@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  BadRequestException,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service'; // Importez le service TasksService
 import { Task } from '@prisma/client'; // Assurez-vous que le chemin vers Task est correct
@@ -16,10 +17,21 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
-  @Post()
-  async createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
-    // Utilisez le service pour créer une tâche
-    return this.tasksService.createTask(createTaskDto);
+  @Post(':taskListId')
+  async createTask(
+    @Param('taskListId') taskListId: string,
+    @Body() createTaskDto: CreateTaskDto,
+  ) {
+    const parsedTaskListId = parseInt(taskListId, 10); // Convertir la chaîne en nombre entier
+
+    if (isNaN(parsedTaskListId)) {
+      // Gérer l'erreur ici si taskListId n'est pas un nombre valide
+      throw new BadRequestException(
+        'taskListId doit être un nombre entier valide.',
+      );
+    }
+
+    return this.tasksService.createTask(parsedTaskListId, createTaskDto);
   }
 
   @Get()

@@ -7,19 +7,21 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 export class TasksService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createTask(createTaskDto: CreateTaskDto) {
-    return this.prisma.task.create({
+  async createTask(taskListId: number, createTaskDto: CreateTaskDto) {
+    const task = await this.prisma.task.create({
       data: {
         title: createTaskDto.title,
         content: createTaskDto.content,
-        status: createTaskDto.status, 
+        status: createTaskDto.status,
         taskList: {
           connect: {
-            id: createTaskDto.taskListId, // On utilise l'ID de la liste de tâches à partir de createTaskDto
+            id: taskListId, // Utilisez taskListId au lieu d'une valeur statique
           },
         },
       },
     });
+
+    return task;
   }
 
   async findAllTasks() {

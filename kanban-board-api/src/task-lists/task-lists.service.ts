@@ -8,11 +8,14 @@ import { TaskList } from '@prisma/client';
 export class TaskListsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createTaskList(
-    createTaskListDto: CreateTaskListDto,
-  ): Promise<TaskList> {
+  async createTaskList(createTaskListDto: CreateTaskListDto) {
+    const { title, boardId } = createTaskListDto;
+
     return this.prisma.taskList.create({
-      data: createTaskListDto,
+      data: {
+        title,
+        boardId, // Associez la liste de tâches à un tableau (Board) en utilisant boardId
+      },
     });
   }
 
