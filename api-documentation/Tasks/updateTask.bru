@@ -1,11 +1,11 @@
 meta {
-  name: createTask
+  name: updateTask
   type: http
-  seq: 1
+  seq: 2
 }
 
-post {
-  url: http://localhost:3000/tasks/4
+put {
+  url: http://localhost:3000/tasks/3
   body: json
   auth: bearer
 }
@@ -20,11 +20,10 @@ auth:bearer {
 
 body:json {
   {
-    "title": "Tâche de test7",
+    "title": "Tâche de test modifiée",
     "content": "Ceci est le contenu de la tâche de test",
     "status": "TODO"
   }
-  
   
   
 }

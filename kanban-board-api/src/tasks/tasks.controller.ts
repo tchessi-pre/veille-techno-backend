@@ -7,6 +7,7 @@ import {
   Body,
   Param,
   BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service'; // Importez le service TasksService
 import { Task } from '@prisma/client'; // Assurez-vous que le chemin vers Task est correct
@@ -15,6 +16,7 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 
 @Controller('tasks')
 export class TasksController {
+  prisma: any;
   constructor(private readonly tasksService: TasksService) {}
 
   @Post(':taskListId')
@@ -46,18 +48,48 @@ export class TasksController {
     return this.tasksService.findTaskById(id);
   }
 
-  @Put(':id')
+  // Modifier une tâche par rapport a son Id
+  @Put(':taskId')
   async updateTask(
-    @Param('id') id: number,
+    @Param('taskId') taskId: string,
     @Body() updateTaskDto: UpdateTaskDto,
-  ): Promise<Task> {
-    // Utilisez le service pour mettre à jour une tâche par son ID
-    return this.tasksService.updateTask(id, updateTaskDto);
+  ) {
+    const parsedTaskId = parseInt(taskId, 10);
+
+    if (isNaN(parsedTaskId)) {
+      throw new BadRequestException(
+        'taskId doit être un nombre entier valide.',
+      );
+    }
+
+    const taskToUpdate = await this.tasksService.findTaskById(parsedTaskId);
+
+    if (!taskToUpdate) {
+      throw new NotFoundException(
+        `La tâche avec l'ID ${parsedTaskId} n'a pas été trouvée.`,
+      );
+    }
+
+    const updatedTask = await this.tasksService.updateTask(
+      parsedTaskId,
+      updateTaskDto,
+    );
+    return updatedTask;
   }
 
   @Delete(':id')
-  async deleteTask(@Param('id') id: number): Promise<void> {
+  async deleteTask(@Param('id') id: string): Promise<{ message: string }> {
+    const parsedId = parseInt(id, 10); // Convertir la chaîne en nombre entier
+
+    if (isNaN(parsedId)) {
+      // Gérer l'erreur ici si l'ID n'est pas un nombre valide
+      throw new BadRequestException('ID doit être un nombre entier valide.');
+    }
+
     // Utilisez le service pour supprimer une tâche par son ID
-    return this.tasksService.deleteTask(id);
+    await this.tasksService.deleteTask(parsedId);
+
+    // Retournez un message de succès
+    return { message: `Tâche avec l'ID ${parsedId} supprimée avec succès.` };
   }
 }
