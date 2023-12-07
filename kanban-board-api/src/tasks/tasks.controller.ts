@@ -43,9 +43,28 @@ export class TasksController {
   }
 
   @Get(':id')
-  async findTaskById(@Param('id') id: number): Promise<Task> {
+  async findTaskById(
+    @Param('id') id: string, // Changez le type de id en string
+  ): Promise<{ message: string; task: Task }> {
+    const parsedId = parseInt(id, 10); // Convertir la chaîne en nombre entier
+
+    if (isNaN(parsedId)) {
+      // Gérer l'erreur ici si l'ID n'est pas un nombre valide
+      throw new BadRequestException('ID doit être un nombre entier valide.');
+    }
+
     // Utilisez le service pour obtenir une tâche par son ID
-    return this.tasksService.findTaskById(id);
+    const task = await this.tasksService.findTaskById(parsedId);
+
+    if (!task) {
+      throw new NotFoundException(`Tâche avec l'ID ${parsedId} non trouvée.`);
+    }
+
+    // Retournez un message de succès avec la tâche et l'ID
+    return {
+      message: `Tâche avec l'ID ${parsedId} récupérée avec succès.`,
+      task,
+    };
   }
 
   // Modifier une tâche par rapport a son Id
