@@ -17,6 +17,7 @@ import { UsersModule } from '../users/users.module';
     }),
     PassportModule,
   ],
+  
   providers: [AuthService, JwtStrategy],
   exports: [AuthService, JwtModule],
 })

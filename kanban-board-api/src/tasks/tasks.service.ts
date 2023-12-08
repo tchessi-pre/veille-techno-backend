@@ -8,6 +8,7 @@ import { Task } from '@prisma/client';
 export class TasksService {
   constructor(private readonly prisma: PrismaService) {}
 
+  // Creer une nouvelle tâche
   async createTask(taskListId: number, createTaskDto: CreateTaskDto) {
     const task = await this.prisma.task.create({
       data: {
@@ -16,7 +17,7 @@ export class TasksService {
         status: createTaskDto.status,
         taskList: {
           connect: {
-            id: taskListId, // Utilisez taskListId au lieu d'une valeur statique
+            id: taskListId, 
           },
         },
       },
@@ -25,10 +26,13 @@ export class TasksService {
     return task;
   }
 
+  // Lister toutes les tâches
   async findAllTasks() {
     return this.prisma.task.findMany();
   }
 
+
+  // Rechercher une tâche
   async findTaskById(id: number): Promise<Task | null> {
     const task = await this.prisma.task.findUnique({
       where: {
@@ -43,6 +47,7 @@ export class TasksService {
     return task;
   }
 
+  // Mettre à jour une tâche
   async updateTask(taskId: number, updateTaskDto: UpdateTaskDto) {
     // Supposons que taskId soit le paramètre d'URL pour l'ID de la tâche à mettre à jour
     const updatedTask = await this.prisma.task.update({

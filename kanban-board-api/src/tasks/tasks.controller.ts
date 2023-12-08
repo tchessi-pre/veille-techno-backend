@@ -22,29 +22,30 @@ export class TasksController {
   prisma: any;
   constructor(private readonly tasksService: TasksService) {}
 
+  // Ajouter une nouvelle tâche
   @Post(':taskListId')
   @UseGuards(JwtAuthGuard, AdminRoleGuard)
   async createTask(
     @Param('taskListId') taskListId: string,
     @Body() createTaskDto: CreateTaskDto,
   ) {
-    const parsedTaskListId = parseInt(taskListId, 10); // Convertir la chaîne en nombre entier
-
+    const parsedTaskListId = parseInt(taskListId, 10);
     if (isNaN(parsedTaskListId)) {
       // Gérer l'erreur ici si taskListId n'est pas un nombre valide
       throw new BadRequestException(
         'taskListId doit être un nombre entier valide.',
       );
     }
-
     return this.tasksService.createTask(parsedTaskListId, createTaskDto);
   }
 
+  // Lister toutes les tâches
   @Get()
   async findAllTasks(): Promise<Task[]> {
     return this.tasksService.findAllTasks();
   }
 
+  // Lister une tâche par son Id
   @Get(':id')
   async findTaskById(
     @Param('id') id: string, // Changez le type de id en string
@@ -95,21 +96,17 @@ export class TasksController {
     return updatedTask;
   }
 
-  
+  // Supprimer une tâche
   @Delete(':id')
   @UseGuards(JwtAuthGuard, AdminRoleGuard)
   async deleteTask(@Param('id') id: string): Promise<{ message: string }> {
-    const parsedId = parseInt(id, 10); // Convertir la chaîne en nombre entier
+    const parsedId = parseInt(id, 10); 
 
     if (isNaN(parsedId)) {
       // Gérer l'erreur ici si l'ID n'est pas un nombre valide
       throw new BadRequestException('ID doit être un nombre entier valide.');
     }
-
-    // Utilisez le service pour supprimer une tâche par son ID
     await this.tasksService.deleteTask(parsedId);
-
-    // Retournez un message de succès
     return { message: `Tâche avec l'ID ${parsedId} supprimée avec succès.` };
   }
 }

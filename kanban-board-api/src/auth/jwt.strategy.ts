@@ -12,7 +12,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       secretOrKey: process.env.JWT_SECRET || 'secretKey',
     });
   }
-
+  
+  // Méthode pour valider le token
   async validate(payload: any) {
     const user = await this.usersService.findUserById(payload.sub);
     return {

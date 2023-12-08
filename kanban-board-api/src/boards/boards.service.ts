@@ -8,6 +8,7 @@ import { Board } from '@prisma/client';
 export class BoardsService {
   constructor(private readonly prisma: PrismaService) {}
 
+  // Creer une nouvelle board
   async createBoard(createBoardDto: CreateBoardDto) {
     return this.prisma.board.create({
       data: {
@@ -21,10 +22,12 @@ export class BoardsService {
     });
   }
 
+  // Rechercher toutes les boards
   async findAllBoards(): Promise<Board[]> {
     return this.prisma.board.findMany();
   }
 
+  // Rechercher une board
   async findBoardById(id: number): Promise<Board> {
     return this.prisma.board.findUnique({
       where: {
@@ -33,6 +36,7 @@ export class BoardsService {
     });
   }
 
+  // Mettre à jour une board
   async updateBoard(
     id: number,
     updateBoardDto: UpdateBoardDto,
@@ -45,6 +49,7 @@ export class BoardsService {
     });
   }
 
+  // Supprimer une board
   async deleteBoard(id: number): Promise<void> {
     await this.prisma.board.delete({
       where: {

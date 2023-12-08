@@ -23,6 +23,7 @@ model User {
   boards    Board[]
 }
 
+
 enum TaskStatus {
   TODO
   IN_PROGRESS

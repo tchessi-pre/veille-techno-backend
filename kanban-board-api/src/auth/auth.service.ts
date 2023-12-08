@@ -11,7 +11,6 @@ export class AuthService {
   ) {}
 
   // Méthodes pour l'authentification
-
   async login(username: string, password: string) {
     // Valider l'utilisateur en utilisant le service UsersService
     const user = await this.usersService.validateUser(username, password);
