@@ -4,15 +4,18 @@ import {
   Post,
   Put,
   Delete,
+  UseGuards,
   Body,
   Param,
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
-import { TasksService } from './tasks.service'; // Importez le service TasksService
-import { Task } from '@prisma/client'; // Assurez-vous que le chemin vers Task est correct
+import { TasksService } from './tasks.service';
+import { Task } from '@prisma/client';
 import { CreateTaskDto } from './dto/create-task-dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { AdminRoleGuard } from '../guards/admin-role.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('tasks')
 export class TasksController {
@@ -20,6 +23,7 @@ export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Post(':taskListId')
+  @UseGuards(JwtAuthGuard, AdminRoleGuard)
   async createTask(
     @Param('taskListId') taskListId: string,
     @Body() createTaskDto: CreateTaskDto,
@@ -38,7 +42,6 @@ export class TasksController {
 
   @Get()
   async findAllTasks(): Promise<Task[]> {
-    // Utilisez le service pour obtenir toutes les tâches
     return this.tasksService.findAllTasks();
   }
 
@@ -74,21 +77,17 @@ export class TasksController {
     @Body() updateTaskDto: UpdateTaskDto,
   ) {
     const parsedTaskId = parseInt(taskId, 10);
-
     if (isNaN(parsedTaskId)) {
       throw new BadRequestException(
         'taskId doit être un nombre entier valide.',
       );
     }
-
     const taskToUpdate = await this.tasksService.findTaskById(parsedTaskId);
-
     if (!taskToUpdate) {
       throw new NotFoundException(
         `La tâche avec l'ID ${parsedTaskId} n'a pas été trouvée.`,
       );
     }
-
     const updatedTask = await this.tasksService.updateTask(
       parsedTaskId,
       updateTaskDto,
@@ -96,7 +95,9 @@ export class TasksController {
     return updatedTask;
   }
 
+  
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, AdminRoleGuard)
   async deleteTask(@Param('id') id: string): Promise<{ message: string }> {
     const parsedId = parseInt(id, 10); // Convertir la chaîne en nombre entier
 
