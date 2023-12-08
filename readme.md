@@ -1,4 +1,4 @@
-# Kanban Board App 
+# Kanban Board App - Backend
 
 ## Description
 ```
