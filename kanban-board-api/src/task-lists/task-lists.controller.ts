@@ -6,6 +6,8 @@ import {
   Delete,
   Body,
   Param,
+  NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { TaskList } from '@prisma/client'; // Assurez-vous que le chemin vers TaskList est correct
 import { TaskListsService } from './task-lists.service'; // Importez le service TaskListsService
@@ -28,8 +30,27 @@ export class TaskListsController {
   }
 
   @Get(':id')
-  async findTaskListById(@Param('id') id: number): Promise<TaskList> {
-    return this.taskListsService.findTaskListById(id);
+  async findTaskListById(
+    @Param('id') id: string,
+  ): Promise<{ message: string; taskList: TaskList }> {
+    const parsedId = parseInt(id, 10);
+
+    if (isNaN(parsedId)) {
+      throw new BadRequestException('ID doit être un nombre entier valide.');
+    }
+
+    const taskList = await this.taskListsService.findTaskListById(parsedId);
+
+    if (!taskList) {
+      throw new NotFoundException(
+        `Liste de tâches avec l'ID ${parsedId} non trouvée.`,
+      );
+    }
+
+    return {
+      message: `Liste de tâches avec l'ID ${parsedId} récupérée avec succès.`,
+      taskList,
+    };
   }
 
   @Put(':id')
