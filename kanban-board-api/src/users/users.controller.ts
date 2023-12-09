@@ -16,6 +16,7 @@ import {
   ConflictException,
   UseGuards,
   Delete,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto'; 
@@ -24,6 +25,7 @@ import { User } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt'; 
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { AdminRoleGuard } from '../guards/admin-role.guard';
 
 @Controller('/')
 @UsePipes(new ValidationPipe())
@@ -34,8 +36,8 @@ export class UsersController {
   ) {}
 
   // Inscription
-  @Post('register') 
-  @HttpCode(HttpStatus.CREATED) // définit le code de statut HTTP de la réponse en cas de succès
+  @Post('register')
+  @HttpCode(HttpStatus.CREATED)
   async register(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.usersService.createUser(createUserDto);
   }
@@ -53,7 +55,6 @@ export class UsersController {
     // Générez un token JWT
     const payload = { username: user.username, sub: user.id };
     const accessToken = this.jwtService.sign(payload);
-    // Retournez le token JWT dans la réponse
     return { user, accessToken };
   }
 
@@ -66,34 +67,51 @@ export class UsersController {
   // Récupérer un utilisateur par son ID
   @Get('users/:id')
   async findUserById(@Param('id') id: string): Promise<User> {
-    const userId = parseInt(id); 
+    const userId = parseInt(id);
     const user = await this.usersService.findUserById(userId);
     if (!user) {
-      throw new NotFoundException('User not found'); 
+      throw new NotFoundException('User not found');
     }
     return user;
   }
 
   // Modifier un utilisateur par son ID
   @Put('users/:id')
+  @UseGuards(AuthGuard('jwt'), AdminRoleGuard)
   async updateUser(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<User> {
     const userId = parseInt(id, 10);
+    if (isNaN(userId)) {
+      throw new BadRequestException('Invalid user ID.');
+    }
+
+    if (updateUserDto.hasOwnProperty('password')) {
+      throw new ConflictException(
+        'Admins are not allowed to change user passwords.',
+      );
+    }
+
     try {
       const updatedUser = await this.usersService.updateUser(
         userId,
         updateUserDto,
       );
+      if (!updatedUser) {
+        throw new NotFoundException(`User with ID ${userId} not found.`);
+      }
       return updatedUser;
     } catch (error) {
       if (error instanceof NotFoundException) {
-        throw new NotFoundException('User not found');
+        // L'utilisateur n'a pas été trouvé
+        throw error;
       } else if (error instanceof ConflictException) {
-        throw new ConflictException(error.message);
+        // Conflit (par exemple, violation de contrainte unique)
+        throw error;
       } else {
-        throw new Error('Failed to update user');
+        // Autres erreurs inattendues
+        throw new InternalServerErrorException('Failed to update user');
       }
     }
   }

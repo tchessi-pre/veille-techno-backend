@@ -1,0 +1,26 @@
+meta {
+  name: updateBoards
+  type: http
+  seq: 3
+}
+
+put {
+  url: http://localhost:3000/boards/7
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwic3ViIjo0MiwiaWF0IjoxNzAyMTM1ODgyLCJleHAiOjE3MDIyMjIyODJ9.6sNEjhq5NOOoTp3pcZ-v-NdRjekBMOlJtDNJrEneIxk
+}
+
+body:json {
+  {
+    "title": "Nom du tableau test update",
+    "ownerId": 2
+  }
+}

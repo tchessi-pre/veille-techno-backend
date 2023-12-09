@@ -1,12 +1,12 @@
 meta {
-  name: createTask
+  name: deleteTaskLists
   type: http
-  seq: 1
+  seq: 4
 }
 
-post {
-  url: http://localhost:3000/tasks/6
-  body: json
+delete {
+  url: http://localhost:3000/task-lists/4
+  body: none
   auth: bearer
 }
 
@@ -16,18 +16,4 @@ headers {
 
 auth:bearer {
   token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwic3ViIjo0MiwiaWF0IjoxNzAyMTM3NDE5LCJleHAiOjE3MDIyMjM4MTl9.Q2PkfpxPilObOe_8n197bVYMPswUfHL9kIEPtOp6C4g
-}
-
-body:json {
-  {
-    "title": "Tâche de test",
-    "content": "Ceci est le contenu de la tâche de test",
-    "status": "TODO"
-    
-    
-    
-  }
-  
-  
-  
 }
