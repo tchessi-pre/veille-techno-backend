@@ -9,8 +9,8 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import { TaskList } from '@prisma/client'; // Assurez-vous que le chemin vers TaskList est correct
-import { TaskListsService } from './task-lists.service'; // Importez le service TaskListsService
+import { TaskList } from '@prisma/client'; 
+import { TaskListsService } from './task-lists.service'; 
 import { CreateTaskListDto } from './dto/create-task-list.dto';
 import { UpdateTaskListDto } from './dto/update-task-list.dto';
 

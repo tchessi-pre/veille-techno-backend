@@ -34,7 +34,7 @@ export class UsersController {
   ) {}
 
   // Inscription
-  @Post('register') //indique que c'est un endpoint POST  /register. pour la creation d'un utilisateur
+  @Post('register') 
   @HttpCode(HttpStatus.CREATED) // définit le code de statut HTTP de la réponse en cas de succès
   async register(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.usersService.createUser(createUserDto);
@@ -53,7 +53,6 @@ export class UsersController {
     // Générez un token JWT
     const payload = { username: user.username, sub: user.id };
     const accessToken = this.jwtService.sign(payload);
-
     // Retournez le token JWT dans la réponse
     return { user, accessToken };
   }
@@ -67,10 +66,10 @@ export class UsersController {
   // Récupérer un utilisateur par son ID
   @Get('users/:id')
   async findUserById(@Param('id') id: string): Promise<User> {
-    const userId = parseInt(id); // Convertir l'ID en nombre (int)
+    const userId = parseInt(id); 
     const user = await this.usersService.findUserById(userId);
     if (!user) {
-      throw new NotFoundException('User not found'); // Gérer le cas où l'utilisateur n'est pas trouvé
+      throw new NotFoundException('User not found'); 
     }
     return user;
   }
@@ -81,11 +80,8 @@ export class UsersController {
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<User> {
-    // Convertir l'ID en nombre
     const userId = parseInt(id, 10);
-
     try {
-      // Mettre à jour l'utilisateur en utilisant updateUserDto
       const updatedUser = await this.usersService.updateUser(
         userId,
         updateUserDto,
@@ -95,7 +91,7 @@ export class UsersController {
       if (error instanceof NotFoundException) {
         throw new NotFoundException('User not found');
       } else if (error instanceof ConflictException) {
-        throw new ConflictException(error.message); // Réutilisez le message d'erreur de l'exception Conflict
+        throw new ConflictException(error.message);
       } else {
         throw new Error('Failed to update user');
       }
@@ -107,12 +103,9 @@ export class UsersController {
   @UseGuards(AuthGuard('jwt'))
   async deleteUser(@Param('id') id: string, @Request() req) {
     const userId = parseInt(id, 10);
-    const requestingUserId = req.user.userId; // Assurez-vous que cette propriété correspond à celle dans le payload JWT
-
+    const requestingUserId = req.user.userId; // ID de l'utilisateur connecté
     // Appeler la méthode deleteUser du service avec les deux IDs
     await this.usersService.deleteUser(userId, requestingUserId);
-
-    // Réponse de succès
     return { message: 'User deleted successfully' };
   }
 }

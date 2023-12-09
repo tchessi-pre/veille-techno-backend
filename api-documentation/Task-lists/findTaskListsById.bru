@@ -1,0 +1,19 @@
+meta {
+  name: findTaskListsById
+  type: http
+  seq: 3
+}
+
+get {
+  url: http://localhost:3000/task-lists/4
+  body: none
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwic3ViIjo0MiwiaWF0IjoxNzAyMDM1Nzk1LCJleHAiOjE3MDIwMzU4NTV9.BbRNcEFqZwj01Q5pIq-cOet3cB8ZSVVSdHstbd6l7-w
+}

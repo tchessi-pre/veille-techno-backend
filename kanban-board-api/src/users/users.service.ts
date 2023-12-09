@@ -55,14 +55,13 @@ export class UsersService {
 
       return result;
     } catch (error) {
-      // On envoye un message d'erreur plus générique en production pour des raisons de sécurité
       throw new InternalServerErrorException('Failed to validate user');
     }
   }
 
   // Récupérer tous les utilisateurs
   async findAllUsers(): Promise<User[]> {
-    return this.prisma.user.findMany(); // On utilise la méthode findMany pour récupérer tous les utilisateurs
+    return this.prisma.user.findMany(); 
   }
 
   // Récupérer un utilisateur par son ID
@@ -84,7 +83,6 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-
     // Vérifier si le champ 'email' existe dans updateUserDto et s'il est différent de l'ancien email
     if (updateUserDto.email && updateUserDto.email !== user.email) {
       // Vérifier si l'email existe déjà dans la base de données
@@ -106,7 +104,6 @@ export class UsersService {
         throw new ConflictException('Username already exists');
       }
     }
-
     // Vérifier si le champ 'password' existe dans updateUserDto
     if (updateUserDto.password) {
       // Hacher le nouveau mot de passe
